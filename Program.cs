@@ -22,7 +22,34 @@ namespace Application
             Console.WriteLine("Results");
             foreach (Result result in results)
             {
-                Console.WriteLine(result.num1 + " " + result.operation + " " + result.num2 + " = " + result.userAnswer + " (Correct answer: " + result.correctAnswer + ") " + (result.isCorrect ? "Correct" : "Incorrect"));
+                if (result.isCorrect == true)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine(result.num1 + " " + result.operation + " " + result.num2 + " = " + result.userAnswer + " (Correct answer: " + result.correctAnswer + ") " + (result.isCorrect ? "Correct" : "Incorrect"));
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(result.num1 + " " + result.operation + " " + result.num2 + " = " + result.userAnswer + " (Correct answer: " + result.correctAnswer + ") " + (result.isCorrect ? "Correct" : "Incorrect"));
+                    Console.ResetColor();
+                }
+              
+            }
+        }
+        public static void GiveFeedback(int correctAnswer, bool isCorrect)
+        {
+            if (isCorrect)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Correct!");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Incorrect! The correct answer is {correctAnswer}");
+                Console.ResetColor();
             }
         }
 
@@ -33,17 +60,88 @@ namespace Application
             int num2 = GenerateRandomNumber(1, 100);
             int userAnswer = HandleUserAnswer(num1, num2, "+");
             int correctAnswer = num1 + num2;
-            if (userAnswer == correctAnswer)
+            bool isCorrect = (userAnswer == correctAnswer);
+            GiveFeedback(correctAnswer,isCorrect);
+            if (isCorrect)
             {
-                Console.WriteLine("Correct!");
                 addResultToList(num1, num2, "+", userAnswer, correctAnswer, true);
             }
             else
             {
-                Console.WriteLine($"Incorrect! The correct answer is {correctAnswer}");
-                addResultToList(num1, num2, "+", userAnswer, correctAnswer, true);
+                addResultToList(num1, num2, "+", userAnswer, correctAnswer, false);
             }
         }
+
+        public static void Subtration()
+        {
+            Console.WriteLine("Subtraction");
+            int num1 = GenerateRandomNumber(1, 100);
+            int num2 = GenerateRandomNumber(1, 100);
+            int userAnswer = HandleUserAnswer(num1, num2, "-");
+            int correctAnswer = num1 - num2;
+            bool isCorrect = (userAnswer == correctAnswer);
+            GiveFeedback(correctAnswer, isCorrect);
+            if (isCorrect)
+            {
+                addResultToList(num1, num2, "-", userAnswer, correctAnswer, true);
+            }
+            else
+            {
+                addResultToList(num1, num2, "-", userAnswer, correctAnswer, false);
+            }
+        }
+
+        public static void Multiplication()
+        {
+            Console.WriteLine("Multiplication");
+            int num1 = GenerateRandomNumber(1, 100);
+            int num2 = GenerateRandomNumber(1, 100);
+            int userAnswer = HandleUserAnswer(num1, num2, "*");
+            int correctAnswer = num1 * num2;
+            bool isCorrect = (userAnswer == correctAnswer);
+            GiveFeedback(correctAnswer, isCorrect);
+            if (isCorrect)
+            {
+                addResultToList(num1, num2, "*", userAnswer, correctAnswer, true);
+            }
+            else
+            {
+                addResultToList(num1, num2, "*", userAnswer, correctAnswer, false);
+            }
+        }
+
+        public static int FindSuitableDivisorForQuotientToBeInteger(int divident)
+        {
+            int divisor;
+            while (true)
+            {
+                divisor = GenerateRandomNumber(1, 100);
+                if (divident % divisor == 0)
+                {
+                    return divisor;
+                }
+            }
+        }
+
+        public static void Division()
+        {          
+            Console.WriteLine("Division");
+            int divident = GenerateRandomNumber(0, 100);
+            int divisor = FindSuitableDivisorForQuotientToBeInteger(divident);
+            int userAnswer = HandleUserAnswer(divident, divisor, "/");
+            int correctAnswer = divident / divisor;
+            bool isCorrect = (userAnswer == correctAnswer);
+            GiveFeedback(correctAnswer, isCorrect);
+            if (isCorrect)
+            {
+                addResultToList(divident, divisor, "/", userAnswer, correctAnswer, true);
+            }
+            else
+            {
+                addResultToList(divident, divisor, "/", userAnswer, correctAnswer, false);
+            }
+        }
+
 
         public static void addResultToList(int num1, int num2, string operation, int userAnswer, int correctAnswer, bool isCorrect)
         {
@@ -66,16 +164,23 @@ namespace Application
         {
             while (true)
             {
+                Console.WriteLine("To view game history, enter H");
                 Console.WriteLine("What is " + num1.ToString() + " " + operation + " " + num2.ToString());
                 var rawUserAnswer = Console.ReadLine();
-                int userAnswerInt = 0;
+
+                if (rawUserAnswer == "H" || rawUserAnswer == "h") // allow user to view game history
+                {
+                    ReadAndDisplayResults();
+                    continue;
+                }
+                int userAnswerInt = 0; 
                 try
                 {
                     userAnswerInt = Int32.Parse(rawUserAnswer); // raw choice will never be null because because ReadLine() returns empty string if there is no input, not null
                 }
                 catch (FormatException)
                 {
-                    Console.WriteLine("You entered a value that is not a number or did not enter anything. Please enter a valid answer!: ");
+                    Console.WriteLine("You entered a value that is not a number, H or did not enter anything. Please enter a valid answer!: ");
                     continue;
                 }
                 catch (OverflowException)
@@ -146,15 +251,24 @@ namespace Application
             }
             else if (choiceInt == 2)
             {
-                Console.WriteLine("Subtraction");
+                for (int i = 0; i < 10; i++)
+                {
+                    Subtration(); ;
+                }  
             }
             else if (choiceInt == 3)
             {
-                Console.WriteLine("Multiplication");
+                for (int i = 0; i < 10; i++)
+                {
+                    Multiplication(); ;
+                }
             }
             else if (choiceInt == 4)
             {
-                Console.WriteLine("Division");
+                for (int i = 0; i < 10; i++)
+                {
+                   Division();
+                }
             }
             else if (choiceInt == 5)
             {
@@ -163,7 +277,7 @@ namespace Application
 
         }
 
-  
+
 
     }
 }
